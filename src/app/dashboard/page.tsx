@@ -15,6 +15,7 @@ import Link from "next/link";
 
 
 export default function Dashboard() {
+  
   return (
     <main className="flex flex-col justify-center h-full text-center gap-6 max-w-5xl mx-auto my-12">
         <div className="flex justify-between">            
@@ -32,7 +33,7 @@ export default function Dashboard() {
                 <TableHead className="p-4">Customer</TableHead>
                 <TableHead className="p-4">Email</TableHead>
                 <TableHead className="text-center p-4">Status</TableHead>
-                <TableHead className="text-right p-4">Value</TableHead>
+                <TableHead className="text-right p-4">Amount</TableHead>
             </TableRow>
         </TableHeader>
         <TableBody>
