@@ -7,5 +7,6 @@ export const Inovices = pgTable('invoices', {
   amount: integer('amount').notNull(),
   status: text('status', { enum: ['pending', 'paid', 'cancelled'] }).notNull().default('pending'),
   description: text('description').notNull(),
+  userId: text('userId').notNull(),
   createTs: timestamp('createTs').notNull().defaultNow(),
 });
