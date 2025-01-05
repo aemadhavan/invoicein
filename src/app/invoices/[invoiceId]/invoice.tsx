@@ -24,8 +24,9 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { updateInvoice,deleteInvoice } from "@/app/actions";
-import { ChevronDown, Ellipsis, Trash2 } from "lucide-react";
+import { ChevronDown, CreditCard, Ellipsis, Trash2 } from "lucide-react";
 import type { Customers, Invoices } from "@/db/schema";
+import Link from "next/link";
 
 interface InvoiceProps {
     invoice: typeof Invoices.$inferSelect & {
@@ -88,6 +89,7 @@ export default  function Invoice({invoice}:InvoiceProps) {
                               <form action={handleOnUpdateStatus}>
                                 <input type="hidden" name="id" value={invoice.id} />
                                 <input type="hidden" name="status" value={status.id} />
+                                <input type="hidden" name="redirect" value={'true'} />
                                 <button type="submit">{status.label}</button>
                               </form>
                           </DropdownMenuItem>})     
@@ -109,6 +111,15 @@ export default  function Invoice({invoice}:InvoiceProps) {
                               <Trash2 className="w-4 h-auto mr-2"/>
                               Delete Invoice
                           </button>
+                      </DialogTrigger>                          
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem>
+                      <DialogTrigger>
+                          <Link href={`/invoices/${invoice.id}/payment`} className="flex items-center gap-2">
+                              <CreditCard className="w-4 h-auto mr-2"/>
+                              Payment Invoice
+                          </Link>
                       </DialogTrigger>                          
                       </DropdownMenuItem>
                   </DropdownMenuContent>
