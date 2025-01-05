@@ -25,10 +25,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { updateInvoice,deleteInvoice } from "@/app/actions";
 import { ChevronDown, Ellipsis, Trash2 } from "lucide-react";
-import type { Invoices } from "@/db/schema";
+import type { Customers, Invoices } from "@/db/schema";
 
 interface InvoiceProps {
-    invoice: typeof Invoices.$inferSelect;
+    invoice: typeof Invoices.$inferSelect & {
+      customer: typeof Customers.$inferSelect;
+    };
 }
 export default  function Invoice({invoice}:InvoiceProps) {  
   const [currentStatus, setCurrentStatus] = useOptimistic(
@@ -154,13 +156,13 @@ export default  function Invoice({invoice}:InvoiceProps) {
             <strong className="block w-28 flex-shrink-0 font-medium text-sm">
               Billing Name
             </strong>
-            <span>{}</span>
+            <span>{invoice.customer.name}</span>
           </li>
           <li className="flex gap-4">
             <strong className="block w-28 flex-shrink-0 font-medium text-sm">
               Billing Email
             </strong>
-            <span>{}</span>
+            <span>{invoice.customer.email}</span>
           </li>
         </ul>
       </Container>

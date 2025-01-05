@@ -19,7 +19,13 @@ import Container from "@/components/Container";
 
 
 export default async function Dashboard() {
-  const invoices = await getInvoices();
+  const results = await getInvoices();
+  const invoices = results?.map(({ invoices, customers }) => {
+    return {
+      ...invoices,
+      customer: customers,
+    };
+  }); 
 
   return (
     <main className="h-full my-12">
@@ -48,10 +54,10 @@ export default async function Dashboard() {
                                 <Link className="block p-4" href={`/invoices/${invoice.id}`}><span className="font-semibold">{new Date(invoice.createTs).toLocaleDateString()}</span></Link>
                             </TableCell>
                             <TableCell className="text-left p-0">
-                                <Link className="block p-4" href={`/invoices/${invoice.id}`}><span className="font-semibold">{"Codesole"}</span></Link>
+                                <Link className="block p-4" href={`/invoices/${invoice.id}`}><span className="font-semibold">{invoice.customer.name}</span></Link>
                             </TableCell>
                             <TableCell className="text-left p-0">
-                                <Link className="block p-4" href={`/invoices/${invoice.id}`}><span>{"codesoles@gmail.com"}</span></Link>
+                                <Link className="block p-4" href={`/invoices/${invoice.id}`}><span>{invoice.customer.email}</span></Link>
                             </TableCell>
                             <TableCell className="text-center p-0">
                                 <Link className="block p-4" href={`/invoices/${invoice.id}`}><span className="font-semibold"><Badge className={cn("rounded-full capitalize",

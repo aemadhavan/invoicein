@@ -1,6 +1,6 @@
 "use server";
 import { db } from "@/db";
-import { Invoices } from "@/db/schema";
+import { Invoices, Customers } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { desc,eq,and } from "drizzle-orm";
 import { redirect } from "next/navigation";
@@ -12,8 +12,9 @@ export async function createInvoice(formData: FormData) {
     const { userId } = await auth();//get the user id from the auth object
     console.log(userId);
     if(!userId) { throw new Error('User not found'); }
-    const name = formData.get('name');
-    const email = formData.get('email');
+
+    
+   
     //const amount = Number.parseFloat(String(fromData.get('amount'))) * 100;
     const rawAmount = formData.get('amount');
     if(!rawAmount) { throw new Error('Invalid amount'); }
@@ -28,18 +29,42 @@ export async function createInvoice(formData: FormData) {
         throw new Error('Description is required');
     }
     const description = rawDescription;
-    
+
+    // Handle customer name
+    const rawName = formData.get('name');
+    if (!rawName || typeof rawName !== 'string') {
+        throw new Error('Name is required');
+    }
+    const name = rawName
+
+    // Handle customer name
+    const rawEmail = formData.get('email');
+    if (!rawEmail || typeof rawEmail !== 'string') {
+        throw new Error('Name is required');
+    }
+    const email = rawEmail;
+
+
     const status = 'pending' as const;
 
     console.log(name, email, amount, description);
-    const insertData = {
+    
+    const insertCustomerData = {
+        name: name,
+        email: email,
+        userId: userId
+    }
+    
+    const [customer] = await db.insert(Customers).values(insertCustomerData).returning({id:Customers.id}); 
+    const insertInvoiceData = {
         amount: amount,
         status: status,
         description: description,
         userId: userId,
+        customerId: customer.id
+        
     } ;//as const;
-
-    const results = await db.insert(Invoices).values(insertData).returning({id:Invoices.id});  
+    const results = await db.insert(Invoices).values(insertInvoiceData).returning({id:Invoices.id});  
     //results[0].id;
     redirect(`/invoices/${results[0].id}`);
 }
@@ -115,15 +140,23 @@ export async function deleteInvoice(formData: FormData) {
 export async function getInvoices() {
     const { userId } = await auth();//get the user id from the auth object
     if(!userId) { throw new Error('User not found'); }
-    const invoices = await db.select().from(Invoices).where(eq(Invoices.userId,userId)).orderBy(desc(Invoices.createTs));
+    const invoices = await db.select().from(Invoices)
+                                        .innerJoin(Customers,eq(Invoices.customerId,Customers.id))
+                                        .where(eq(Invoices.userId,userId)).orderBy(desc(Invoices.createTs));
     return invoices;
 }
 
 export async function getInvoice(id: number) {
     const { userId } = await auth();//get the user id from the auth object
     if(!userId) { throw new Error('User not found'); }
-    const invoice = await db.select().from(Invoices).where(and(eq(Invoices.id,id),eq(Invoices.userId,userId))).limit(1);
+    const result = await db.select().from(Invoices)
+                                     .innerJoin(Customers,eq(Invoices.customerId,Customers.id))
+                                    .where(and(eq(Invoices.id,id),eq(Invoices.userId,userId))).limit(1).then(results => results[0]); ;
+    //console.log(result[0].invoices);
+    const invoice = {...result.invoices,customer:result.customers};//merge the invoice and customer objects into one object
     return invoice;
+
+    //return result;
 }
 
 // Type guard function
