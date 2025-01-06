@@ -65,6 +65,11 @@ export default async function PaymentPage({ params, searchParams }: PaymentPageP
   return (
     <main className="h-full">
       <Container>
+        {isSuccess && (
+          <p className="bg-green-100 text-sm text-green-800 text-center px-3 py-2 rounded-lg mb-6">
+            Payment successful! Your invoice has been marked as paid.
+          </p>
+        )}
         {isError && (
           <p className="bg-red-100 text-sm text-red-800 text-center px-3 py-2 rounded-lg mb-6">
             Something went wrong, please try again!
