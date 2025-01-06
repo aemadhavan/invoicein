@@ -7,12 +7,14 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import Stripe from "stripe";
+import { Resend } from "resend";
+import InvoiceCreatedEmail from "@/emails/invoice-created";
 
 // Define valid status types
 type InvoiceStatus = "pending" | "paid" | "cancelled";
 
 const stripe = new Stripe(String(process.env.STRIPE_API_SECRET));
-
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 
 export async function createInvoice(formData: FormData) {
@@ -75,6 +77,13 @@ export async function createInvoice(formData: FormData) {
         
     } ;//as const;
     const results = await db.insert(Invoices).values(insertInvoiceData).returning({id:Invoices.id});  
+
+    await resend.emails.send({
+        from: "InvoiceIn <info@mail.codesole.com>",
+        to: [email],
+        subject: "You Have a New Invoice",
+        react: InvoiceCreatedEmail({ invoiceId: results[0].id }),
+      });
     //results[0].id;
     redirect(`/invoices/${results[0].id}`);
 }
