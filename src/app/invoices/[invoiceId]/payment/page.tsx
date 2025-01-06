@@ -1,13 +1,12 @@
 
 
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
 import { getInvoice4Payment, payInvoice, updateInvoice } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Check, CreditCard } from "lucide-react";
-import Form from "next/form";
 import Stripe from "stripe";
 
 interface PaymentPageProps {
@@ -33,7 +32,7 @@ export default async function PaymentPage({params, searchParams}:PaymentPageProp
 
   // Set initial states
   let isSuccess = false;
-  let isCanceled = awaitedSearchParams.paymentStatus === 'canceled';
+  const isCanceled = awaitedSearchParams.paymentStatus === 'canceled';
   let isError = paymentSuccessRequested && !hasValidSession;
 
 

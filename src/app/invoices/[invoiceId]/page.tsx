@@ -1,7 +1,6 @@
 
 import { notFound } from "next/navigation";
 import { getInvoice } from "@/app/actions";
-import { updateInvoice } from "@/app/actions";
 import Invoice from "./invoice";
 import { Customers, Invoices } from "@/db/schema";
 
@@ -15,7 +14,7 @@ export default async function InvoicePage({params}:{params: {invoiceId: string}}
   if(isNaN(invoiceId)) {
     throw new Error('Invalid invoice ID');
   }
-  let invoice =  await getInvoice(invoiceId);
+  const invoice =  await getInvoice(invoiceId);
 
   if(!invoice) {
     notFound();

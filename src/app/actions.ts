@@ -2,7 +2,7 @@
 import { db } from "@/db";
 import { Invoices, Customers } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";
-import { desc,eq,and, or, isNull } from "drizzle-orm";
+import { desc,eq,and, isNull } from "drizzle-orm";
 //import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
@@ -215,7 +215,7 @@ export async function getInvoice(id: number) {
 }
 export async function getInvoice4Payment(invocieId: number) {
     
-    let result = await db.select({
+    const result = await db.select({
                                 invoices: {
                                     id: Invoices.id,
                                     amount: Invoices.amount,
@@ -242,7 +242,7 @@ export async function payInvoice(formData: FormData) {
     const headersList = await headers();//get the headers object
     const origin = headersList.get('origin');//get the origin from the headers object
 
-    const { userId, orgId } = await auth();//get the user id from the auth object
+    const { userId } = await auth();//get the user id from the auth object
     const invoiceId = Number(formData.get('invoiceId'));//get the invoice id from the form data
     if(!userId) { throw new Error('User not found'); }
     if(isNaN(invoiceId)) { throw new Error('Invalid invoice ID'); }
