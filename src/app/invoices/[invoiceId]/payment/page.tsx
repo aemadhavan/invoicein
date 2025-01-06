@@ -8,18 +8,18 @@ import { Check, CreditCard } from "lucide-react";
 import Stripe from "stripe";
 
 interface PaymentPageProps {
-  params: { invoiceId: string };
-  searchParams: { 
+  params: Promise<{ invoiceId: string }>;
+  searchParams: Promise<{ 
     paymentStatus?: string; 
     session_id?: string;
-  };
+  }>;
 }
 
 const stripe = new Stripe(process.env.STRIPE_API_SECRET || '');
 
 export default async function PaymentPage({ params, searchParams }: PaymentPageProps) {   
-  const { invoiceId } = params;
-  const { paymentStatus, session_id } = searchParams;
+  const { invoiceId } = await params;
+  const { paymentStatus, session_id } = await searchParams;
 
   const invoiceId_num = Number.parseInt(invoiceId);
   if (isNaN(invoiceId_num)) {
