@@ -10,14 +10,16 @@ type InvoiceWithCustomer = typeof Invoices.$inferSelect & {
 export default async function InvoicePage({
   params,
 }: {
-  params: { invoiceId: string };
+  params: Promise<{ invoiceId: string }>;
 }) {
-  const invoiceId = Number.parseInt(params.invoiceId);
-  if (isNaN(invoiceId)) {
+  const { invoiceId } = await params;
+  const invoiceId_num = Number.parseInt(invoiceId);
+  
+  if (isNaN(invoiceId_num)) {
     throw new Error('Invalid invoice ID');
   }
 
-  const invoice = await getInvoice(invoiceId);
+  const invoice = await getInvoice(invoiceId_num);
   if (!invoice) {
     notFound();
   }
