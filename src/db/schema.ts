@@ -1,4 +1,3 @@
-import { desc } from 'drizzle-orm';
 import {integer, pgTable, serial, text, timestamp} from 'drizzle-orm/pg-core';
 
 export const Invoices = pgTable('invoices', {

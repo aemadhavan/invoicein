@@ -3,7 +3,7 @@ import { db } from "@/db";
 import { Invoices, Customers } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { desc,eq,and, or, isNull } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+//import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import Stripe from "stripe";
