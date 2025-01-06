@@ -23,6 +23,5 @@ export default async function InvoicePage({
   if (!invoice) {
     notFound();
   }
-
   return <Invoice invoice={invoice as InvoiceWithCustomer} />;
 }
