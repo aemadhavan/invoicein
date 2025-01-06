@@ -8,22 +8,22 @@ import { Check, CreditCard } from "lucide-react";
 import Stripe from "stripe";
 
 interface PaymentPageProps {
-  params: Promise<{ invoiceId: string }>;
-  searchParams: Promise<{ 
+  params: { invoiceId: string };
+  searchParams: { 
     paymentStatus?: string; 
     session_id?: string;
-  }>;
+  };
 }
 
-const stripe = new Stripe(String(process.env.STRIPE_API_SECRET));
+const stripe = new Stripe(process.env.STRIPE_API_SECRET || '');
 
 export default async function PaymentPage({ params, searchParams }: PaymentPageProps) {   
-  const { invoiceId } = await params;
-  const { paymentStatus, session_id } = await searchParams;
+  const { invoiceId } = params;
+  const { paymentStatus, session_id } = searchParams;
 
   const invoiceId_num = Number.parseInt(invoiceId);
   if (isNaN(invoiceId_num)) {
-    throw new Error('Invalid invoice ID');
+    notFound();
   }
 
   // Extract and validate search params
@@ -34,15 +34,11 @@ export default async function PaymentPage({ params, searchParams }: PaymentPageP
   let isSuccess = false;
   const isCanceled = paymentStatus === 'canceled';
   let isError = paymentSuccessRequested && !hasValidSession;
-
-  console.log("isSuccess", isSuccess);
-  console.log("isCanceled", isCanceled);
-  console.log("isError", isError);
   
   // Handle successful payment flow
-  if (paymentSuccessRequested && hasValidSession) {
+  if (paymentSuccessRequested && hasValidSession && session_id) {
     try {
-      const session = await stripe.checkout.sessions.retrieve(session_id!);
+      const session = await stripe.checkout.sessions.retrieve(session_id);
       if (session.payment_status === 'paid') {
         isSuccess = true;
         const formData = new FormData();
@@ -50,7 +46,6 @@ export default async function PaymentPage({ params, searchParams }: PaymentPageP
         formData.append('status', 'paid');
         formData.append('redirect', 'true');
 
-        // This will handle the redirect if successful
         await updateInvoice(formData);
       } else {
         isError = true;
